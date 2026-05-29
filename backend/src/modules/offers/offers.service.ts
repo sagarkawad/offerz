@@ -38,15 +38,25 @@ export const createOfferForShop = async (
   input: CreateOfferInput,
   createdById: string,
 ) => {
-  const shopOk = await repository.shopExists(shopId);
-  if (!shopOk) {
+  const shop = await repository.findShopById(shopId);
+  if (!shop) {
     throw new OfferServiceError('Shop not found', 404);
   }
 
-  const { validUntil, ...rest } = input;
+  if (!shop.approved) {
+    throw new OfferServiceError('Shop must be approved before you can add offers', 400);
+  }
+
+  const isPublic = input.isPublic ?? false;
+  if (isPublic) {
+    assertOfferCanBePublic(shop);
+  }
+
+  const { validUntil, isPublic: _isPublic, ...rest } = input;
 
   const offer = await repository.create({
     ...rest,
+    isPublic,
     validUntil: new Date(validUntil),
     shopId,
     createdById,
@@ -63,9 +73,17 @@ export const updateOfferForShop = async (
   offerId: string,
   input: UpdateOfferInput,
 ) => {
-  const existing = await repository.findById(offerId);
+  const existing = await repository.findByIdForOwner(offerId);
   if (!existing || existing.shopId !== shopId) {
     throw new OfferServiceError('Offer not found', 404);
+  }
+
+  if (input.isPublic === true) {
+    const shop = await repository.findShopById(shopId);
+    if (!shop) {
+      throw new OfferServiceError('Shop not found', 404);
+    }
+    assertOfferCanBePublic(shop);
   }
 
   const { validUntil, ...rest } = input;
@@ -82,13 +100,19 @@ export const updateOfferForShop = async (
 };
 
 export const deleteOfferForShop = async (shopId: string, offerId: string) => {
-  const existing = await repository.findById(offerId);
+  const existing = await repository.findByIdForOwner(offerId);
   if (!existing || existing.shopId !== shopId) {
     throw new OfferServiceError('Offer not found', 404);
   }
 
   await repository.remove(offerId);
 };
+
+function assertOfferCanBePublic(shop: { isPublic: boolean }) {
+  if (!shop.isPublic) {
+    throw new OfferServiceError('Shop must be public before offers can be made public', 400);
+  }
+}
 
 export class OfferServiceError extends Error {
   constructor(

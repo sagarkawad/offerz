@@ -1,6 +1,6 @@
-import type { ApiCategory, ApiLocation, ApiOffer, ApiSellerOffer, ApiShopSummary } from '@/lib/api-types';
+import type { ApiAdminShop, ApiCategory, ApiLocation, ApiOffer, ApiSellerOffer, ApiShopSummary } from '@/lib/api-types';
 import type { Offer } from '@/types/offer';
-import type { SellerOffer, ShopCategory, ShopSummary } from '@/types/shop';
+import type { AdminShop, SellerOffer, ShopCategory, ShopSummary } from '@/types/shop';
 
 export type Location = {
   id: string;
@@ -57,6 +57,8 @@ export function mapApiShopSummary(shop: ApiShopSummary): ShopSummary {
     imageUrl: shop.imageUrl ?? undefined,
     locationId: shop.locationId,
     locationLabel: shop.location.label,
+    isPublic: shop.isPublic,
+    approved: shop.approved,
     categories: mapApiCategories(shop.categories),
     offerCount: shop.offerCount,
     activeOfferCount: shop.activeOfferCount,
@@ -78,8 +80,21 @@ export function mapApiSellerOffer(offer: ApiSellerOffer): SellerOffer {
     shopId: offer.shopId,
     categoryNames: offer.shop.categories.map((category) => category.name).join(', '),
     status: offer.status,
+    isPublic: offer.isPublic,
     imageUrl: offer.imageUrl ?? undefined,
   };
+}
+
+export function mapApiAdminShop(shop: ApiAdminShop): AdminShop {
+  return {
+    ...mapApiShopSummary(shop),
+    ownerId: shop.owner.clerkId,
+    createdAt: shop.createdAt,
+  };
+}
+
+export function mapApiAdminShops(shops: ApiAdminShop[]): AdminShop[] {
+  return shops.map(mapApiAdminShop);
 }
 
 export function mapApiSellerOffers(offers: ApiSellerOffer[]): SellerOffer[] {

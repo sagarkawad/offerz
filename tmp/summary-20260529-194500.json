@@ -1,0 +1,4 @@
+{
+  "summary": "Fixed shop visibility toggle lag with optimistic UI: local isPublic state updates immediately on tap, rolls back on API failure, and PATCH response merges into useMyShops cache via new updateShop helper instead of full list refetch. Badges and helper text now follow local state; small spinner shows while saving.",
+  "current_status": "Shop detail public toggle feels instant. useMyShops exposes updateShop for cache patches; offers refetch only when shop is made private (backend cascades offer privacy)."
+}

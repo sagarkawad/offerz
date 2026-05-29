@@ -1,0 +1,4 @@
+{
+  "summary": "Updated shopkeeper offer date entry to use DD-MM-YYYY instead of YYYY-MM-DD. Added a shared date-format utility to convert between display format and API ISO format, updated create and edit offer forms with new labels/placeholders, validation on save, and display formatting when editing existing offers.",
+  "current_status": "Offer visibility/approval work continues across backend and mobile app. Shopkeeper offer create/edit flows now accept dates in DD-MM-YYYY while still sending ISO dates to the backend API."
+}

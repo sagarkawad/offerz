@@ -32,7 +32,7 @@ type MenuSection = {
 };
 
 type ProfileScreenProps = {
-  variant: 'buyer' | 'seller';
+  variant: 'buyer' | 'seller' | 'admin';
 };
 
 function MenuRow({ item }: { item: MenuItem }) {
@@ -120,10 +120,14 @@ export function ProfileScreen({ variant }: ProfileScreenProps) {
   const subtitle = isSignedIn
     ? variant === 'seller'
       ? user?.primaryEmailAddress?.emailAddress ?? 'Manage your shops and offers'
-      : user?.primaryEmailAddress?.emailAddress ?? ''
+      : variant === 'admin'
+        ? user?.primaryEmailAddress?.emailAddress ?? 'Review and approve shops'
+        : user?.primaryEmailAddress?.emailAddress ?? ''
     : variant === 'seller'
       ? 'Sign in to manage your shops'
-      : 'Sign in to sync your saved offers';
+      : variant === 'admin'
+        ? 'Sign in to review shops'
+        : 'Sign in to sync your saved offers';
 
   const avatarInitial = isSignedIn
     ? getInitials(user?.firstName, user?.lastName, user?.primaryEmailAddress?.emailAddress)

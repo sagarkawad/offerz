@@ -7,7 +7,7 @@ import { useUserRole } from '@/contexts/user-context';
 
 export default function Index() {
   const { isSignedIn, isLoaded } = useAuth();
-  const { isShopkeeper, isLoading } = useUserRole();
+  const { isShopkeeper, isAdmin, isLoading } = useUserRole();
 
   if (!isLoaded || (isSignedIn && isLoading)) {
     return (
@@ -15,6 +15,10 @@ export default function Index() {
         <ActivityIndicator />
       </ThemedView>
     );
+  }
+
+  if (isSignedIn && isAdmin) {
+    return <Redirect href="/(admin-tabs)/shops" />;
   }
 
   if (isSignedIn && isShopkeeper) {

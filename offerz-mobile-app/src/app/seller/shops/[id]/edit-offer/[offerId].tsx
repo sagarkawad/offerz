@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, TextInput } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,17 +8,23 @@ import { ProfileScreenHeader } from '@/components/profile-screen-header';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
+import { ALL_CATEGORIES, ALL_LOCATIONS } from '@/contexts/seller-filter-context';
 import { useApi } from '@/hooks/use-api';
+import { useMyShops } from '@/hooks/use-my-shops';
 import { useShopOffers } from '@/hooks/use-shop-offers';
 import { useTheme } from '@/hooks/use-theme';
 import type { ApiSellerOffer } from '@/lib/api-types';
 import { parseApiResponse } from '@/lib/api';
+import { formatDateForDisplay, parseDisplayDate } from '@/lib/date-format';
 
 export default function EditOfferScreen() {
   const router = useRouter();
   const theme = useTheme();
   const { fetchApi } = useApi();
   const { id, offerId } = useLocalSearchParams<{ id: string; offerId: string }>();
+  const { shops } = useMyShops(ALL_LOCATIONS, ALL_CATEGORIES, Boolean(id));
+  const shop = shops.find((item) => item.id === id);
+  const canMakeOfferPublic = Boolean(shop?.isPublic);
   const { offers, isLoading } = useShopOffers(id ?? '', 'all');
   const offer = offers.find((item) => item.id === offerId);
 
@@ -26,6 +32,7 @@ export default function EditOfferScreen() {
   const [description, setDescription] = useState('');
   const [discount, setDiscount] = useState('');
   const [validUntil, setValidUntil] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,8 +44,15 @@ export default function EditOfferScreen() {
     setTitle(offer.title);
     setDescription(offer.description);
     setDiscount(offer.discount);
-    setValidUntil(offer.validUntil.slice(0, 10));
+    setValidUntil(formatDateForDisplay(offer.validUntil));
+    setIsPublic(offer.isPublic);
   }, [offer]);
+
+  useEffect(() => {
+    if (!canMakeOfferPublic) {
+      setIsPublic(false);
+    }
+  }, [canMakeOfferPublic]);
 
   const inputStyle = [
     formStyles.input,
@@ -54,6 +68,12 @@ export default function EditOfferScreen() {
       return;
     }
 
+    const parsedValidUntil = parseDisplayDate(validUntil);
+    if (!parsedValidUntil) {
+      setError('Valid until must be in DD-MM-YYYY format.');
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
@@ -64,7 +84,8 @@ export default function EditOfferScreen() {
           title: title.trim(),
           description: description.trim(),
           discount: discount.trim(),
-          validUntil,
+          validUntil: parsedValidUntil,
+          isPublic,
         }),
       });
       await parseApiResponse<ApiSellerOffer>(response);
@@ -105,8 +126,26 @@ export default function EditOfferScreen() {
             <ThemedText type="smallBold">Discount</ThemedText>
             <TextInput value={discount} onChangeText={setDiscount} style={inputStyle} />
 
-            <ThemedText type="smallBold">Valid until (YYYY-MM-DD)</ThemedText>
-            <TextInput value={validUntil} onChangeText={setValidUntil} style={inputStyle} />
+            <ThemedText type="smallBold">Valid until (DD-MM-YYYY)</ThemedText>
+            <TextInput
+              value={validUntil}
+              onChangeText={setValidUntil}
+              style={inputStyle}
+              placeholder="31-12-2026"
+              placeholderTextColor={theme.textSecondary}
+            />
+
+            <ThemedView style={styles.switchRow}>
+              <ThemedView style={styles.switchText}>
+                <ThemedText type="smallBold">Make offer public</ThemedText>
+                <ThemedText type="small" themeColor="textSecondary">
+                  {canMakeOfferPublic
+                    ? 'Buyers will see this offer once your shop is approved.'
+                    : 'Make the shop public first. Offers follow your shop visibility.'}
+                </ThemedText>
+              </ThemedView>
+              <Switch value={isPublic} onValueChange={setIsPublic} disabled={!canMakeOfferPublic} />
+            </ThemedView>
 
             {error ? <ThemedText style={formStyles.error}>{error}</ThemedText> : null}
 
@@ -142,6 +181,18 @@ const styles = StyleSheet.create({
   multiline: {
     minHeight: 96,
     textAlignVertical: 'top',
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.three,
+    backgroundColor: 'transparent',
+  },
+  switchText: {
+    flex: 1,
+    gap: Spacing.half,
+    backgroundColor: 'transparent',
   },
   centerState: {
     flex: 1,

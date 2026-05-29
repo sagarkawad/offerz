@@ -33,6 +33,7 @@ export type ApiOffer = {
   discount: string;
   validUntil: string;
   imageUrl?: string | null;
+  isPublic: boolean;
   shopId: string;
   createdById: string;
   createdAt: string;
@@ -52,6 +53,7 @@ export type ApiOffer = {
 export type ApiUser = {
   clerkId: string;
   role: 'BUYER' | 'SHOPKEEPER';
+  isAdmin: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -61,6 +63,8 @@ export type ApiShopSummary = {
   name: string;
   description?: string | null;
   imageUrl?: string | null;
+  isPublic: boolean;
+  approved: boolean;
   locationId: string;
   ownerId: string;
   createdAt: string;
@@ -74,4 +78,11 @@ export type ApiShopSummary = {
 
 export type ApiSellerOffer = ApiOffer & {
   status: 'active' | 'expired';
+};
+
+export type ApiAdminShop = ApiShopSummary & {
+  owner: {
+    clerkId: string;
+    role: 'BUYER' | 'SHOPKEEPER';
+  };
 };

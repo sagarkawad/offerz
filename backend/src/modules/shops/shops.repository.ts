@@ -73,6 +73,39 @@ export const findById = async (id: string) => {
   };
 };
 
+export const findByIdPublic = async (id: string) => {
+  const shop = await prisma.shop.findFirst({
+    where: {
+      id,
+      approved: true,
+      isPublic: true,
+    },
+    include: {
+      ...shopInclude,
+      offers: {
+        where: {
+          isPublic: true,
+          validUntil: { gte: startOfToday() },
+        },
+        orderBy: { createdAt: 'desc' },
+        include: offerInclude,
+      },
+    },
+  });
+
+  if (!shop) {
+    return null;
+  }
+
+  const { categories, offers, ...rest } = shop;
+
+  return {
+    ...rest,
+    categories: mapShopCategories({ categories }),
+    offers,
+  };
+};
+
 export const create = async (data: {
   name: string;
   locationId: string;
@@ -80,12 +113,15 @@ export const create = async (data: {
   categoryIds: string[];
   description?: string;
   imageUrl?: string;
+  isPublic?: boolean;
 }) => {
-  const { categoryIds, ...shopData } = data;
+  const { categoryIds, isPublic = false, ...shopData } = data;
 
   const shop = await prisma.shop.create({
     data: {
       ...shopData,
+      isPublic,
+      approved: false,
       categories: {
         create: categoryIds.map((categoryId) => ({ categoryId })),
       },
@@ -103,6 +139,7 @@ export const update = async (
     description?: string;
     imageUrl?: string;
     categoryIds?: string[];
+    isPublic?: boolean;
   },
 ) => {
   const { categoryIds, ...shopData } = data;
@@ -115,6 +152,13 @@ export const update = async (
           data: categoryIds.map((categoryId) => ({ shopId: id, categoryId })),
         });
       }
+    }
+
+    if (shopData.isPublic === false) {
+      await tx.offer.updateMany({
+        where: { shopId: id },
+        data: { isPublic: false },
+      });
     }
 
     return tx.shop.update({

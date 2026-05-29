@@ -18,6 +18,7 @@ enum Role {
 model User {
   clerkId String @id
   role    Role   @default(BUYER)
+  isAdmin Boolean @default(false)
 
   shops         Shop[]
   createdOffers Offer[]
@@ -42,6 +43,8 @@ model Shop {
   name        String
   description String?
   imageUrl    String?
+  isPublic    Boolean @default(false)
+  approved    Boolean @default(false)
 
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
@@ -57,6 +60,8 @@ model Shop {
 
   @@index([ownerId])
   @@index([locationId])
+  @@index([approved])
+  @@index([isPublic])
 }
 
 model ShopCategory {
@@ -87,6 +92,7 @@ model Offer {
   discount    String
   validUntil  DateTime
   imageUrl    String?
+  isPublic    Boolean  @default(false)
 
   shopId String
   shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
@@ -102,6 +108,7 @@ model Offer {
   @@index([shopId])
   @@index([validUntil])
   @@index([createdById])
+  @@index([isPublic])
 }
 
 model SavedOffer {

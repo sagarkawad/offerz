@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet } from 'react-native';
 
+import { ShopStatusBadges } from '@/components/seller/shop-status-badges';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
@@ -24,6 +25,8 @@ export function ShopCard({ shop, onPress }: ShopCardProps) {
             {shop.locationLabel}
           </ThemedText>
         </ThemedView>
+
+        <ShopStatusBadges approved={shop.approved} isPublic={shop.isPublic} />
 
         <ThemedView style={styles.statsRow}>
           <ThemedView type="backgroundSelected" style={styles.statBadge}>

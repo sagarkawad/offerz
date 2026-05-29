@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, TextInput } from 'react-native';
 import { type Href, useRouter } from 'expo-router';
 
 import { authFormStyles as formStyles } from '@/components/auth-form-styles';
@@ -29,6 +29,7 @@ export function CreateShopForm({ onSuccess, includeTabBarInset }: CreateShopForm
   const [description, setDescription] = useState('');
   const [locationId, setLocationId] = useState('');
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [isPublic, setIsPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,6 +67,7 @@ export function CreateShopForm({ onSuccess, includeTabBarInset }: CreateShopForm
           description: description.trim() || undefined,
           locationId,
           categoryIds,
+          isPublic,
         }),
       });
       await parseApiResponse<ApiShopSummary>(response);
@@ -158,6 +160,16 @@ export function CreateShopForm({ onSuccess, includeTabBarInset }: CreateShopForm
         })}
       </ThemedView>
 
+      <ThemedView style={styles.switchRow}>
+        <ThemedView style={styles.switchText}>
+          <ThemedText type="smallBold">Make shop public</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            Buyers will see this shop once an admin approves it.
+          </ThemedText>
+        </ThemedView>
+        <Switch value={isPublic} onValueChange={setIsPublic} />
+      </ThemedView>
+
       {error ? <ThemedText style={formStyles.error}>{error}</ThemedText> : null}
 
       <Pressable
@@ -214,6 +226,18 @@ const styles = StyleSheet.create({
   },
   categoryChipSelected: {
     backgroundColor: 'rgba(60, 135, 247, 0.18)',
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.three,
+    backgroundColor: 'transparent',
+  },
+  switchText: {
+    flex: 1,
+    gap: Spacing.half,
+    backgroundColor: 'transparent',
   },
   centerState: {
     flex: 1,

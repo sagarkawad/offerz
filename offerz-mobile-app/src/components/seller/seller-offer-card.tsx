@@ -37,10 +37,15 @@ export function SellerOfferCard({ offer, onPress }: SellerOfferCardProps) {
               </ThemedText>
             ) : null}
           </ThemedView>
-          <ThemedView type={isExpired ? 'backgroundSelected' : 'backgroundSelected'} style={styles.statusBadge}>
-            <ThemedText type="smallBold" themeColor={isExpired ? 'textSecondary' : 'text'}>
-              {isExpired ? 'Expired' : 'Active'}
-            </ThemedText>
+          <ThemedView style={styles.headerBadges}>
+            <ThemedView type="backgroundSelected" style={styles.statusBadge}>
+              <ThemedText type="smallBold" themeColor={isExpired ? 'textSecondary' : 'text'}>
+                {isExpired ? 'Expired' : 'Active'}
+              </ThemedText>
+            </ThemedView>
+            <ThemedView type="backgroundSelected" style={styles.statusBadge}>
+              <ThemedText type="smallBold">{offer.isPublic ? 'Public' : 'Private'}</ThemedText>
+            </ThemedView>
           </ThemedView>
         </ThemedView>
 
@@ -75,6 +80,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: 'transparent',
   },
+  headerBadges: {
+    flexDirection: 'row',
+    gap: Spacing.one,
+    marginLeft: Spacing.two,
+    backgroundColor: 'transparent',
+  },
   headerText: {
     flex: 1,
     gap: Spacing.half,
@@ -84,7 +95,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.one,
     borderRadius: Spacing.one,
-    marginLeft: Spacing.two,
   },
   discountBadge: {
     alignSelf: 'flex-start',

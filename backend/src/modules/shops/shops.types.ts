@@ -4,6 +4,7 @@ export type CreateShopInput = {
   categoryIds: string[];
   description?: string;
   imageUrl?: string;
+  isPublic?: boolean;
 };
 
 export type UpdateShopInput = {
@@ -11,4 +12,5 @@ export type UpdateShopInput = {
   description?: string;
   imageUrl?: string;
   categoryIds?: string[];
+  isPublic?: boolean;
 };

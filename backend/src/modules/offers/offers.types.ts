@@ -4,6 +4,7 @@ export type CreateOfferInput = {
   discount: string;
   validUntil: string;
   imageUrl?: string;
+  isPublic?: boolean;
 };
 
 export type UpdateOfferInput = {
@@ -12,6 +13,7 @@ export type UpdateOfferInput = {
   discount?: string;
   validUntil?: string;
   imageUrl?: string;
+  isPublic?: boolean;
 };
 
 export type OfferStatus = 'active' | 'expired';

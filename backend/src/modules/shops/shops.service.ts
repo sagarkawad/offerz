@@ -9,7 +9,7 @@ export const getMyShops = async (
   categoryId?: string,
 ) => repository.findByOwner(ownerId, locationId, categoryId);
 
-export const getShopById = async (id: string) => repository.findById(id);
+export const getShopById = async (id: string) => repository.findByIdPublic(id);
 
 export const createShop = async (input: CreateShopInput, ownerId: string) => {
   if (!input.categoryIds?.length) {
@@ -33,6 +33,7 @@ export const createShop = async (input: CreateShopInput, ownerId: string) => {
     categoryIds: input.categoryIds,
     description: input.description,
     imageUrl: input.imageUrl,
+    isPublic: input.isPublic ?? false,
   });
 };
 

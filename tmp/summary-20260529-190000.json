@@ -1,0 +1,4 @@
+{
+  "summary": "Implemented shop/offer visibility and admin approval end-to-end. Backend: added isPublic/approved on Shop, isPublic on Offer, isAdmin on User with migration and backfill; requireAdmin middleware; visibility filtering on public offer/shop reads; service validation for shopkeeper toggles; new /api/admin/shops endpoints. Mobile: isPublic switches on shop/offer forms, status badges and shop visibility toggle on seller shop detail; admin tab group with pending shop approval UI; isAdmin routing in user context and index redirect.",
+  "current_status": "All six plan todos completed. New shops default to pending/private; shopkeepers control isPublic after admin approval; buyers only see approved public shops and public offers. To use admin UI, set isAdmin=true on your User row in the database (seed includes seed_admin_1)."
+}

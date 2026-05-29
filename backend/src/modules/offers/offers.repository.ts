@@ -6,13 +6,16 @@ import type { OfferStatus } from './offers.types';
 
 export const findMany = async (locationId?: string, categoryId?: string) => {
   const shopFilter = {
+    approved: true,
+    isPublic: true,
     ...(locationId ? { locationId } : {}),
     ...(categoryId ? { categories: { some: { categoryId } } } : {}),
   };
 
   const where = {
+    isPublic: true,
     validUntil: { gte: new Date() },
-    ...(Object.keys(shopFilter).length > 0 ? { shop: shopFilter } : {}),
+    shop: shopFilter,
   };
 
   return prisma.offer.findMany({
@@ -42,6 +45,21 @@ export const findByShopId = async (shopId: string, status: OfferStatus | 'all' =
 };
 
 export const findById = async (id: string) => {
+  return prisma.offer.findFirst({
+    where: {
+      id,
+      isPublic: true,
+      validUntil: { gte: new Date() },
+      shop: {
+        approved: true,
+        isPublic: true,
+      },
+    },
+    include: offerInclude,
+  });
+};
+
+export const findByIdForOwner = async (id: string) => {
   return prisma.offer.findUnique({
     where: { id },
     include: offerInclude,
@@ -56,9 +74,14 @@ export const create = async (data: {
   shopId: string;
   createdById: string;
   imageUrl?: string;
+  isPublic?: boolean;
 }) => {
+  const { isPublic = false, ...rest } = data;
   return prisma.offer.create({
-    data,
+    data: {
+      ...rest,
+      isPublic,
+    },
     include: offerInclude,
   });
 };
@@ -71,6 +94,7 @@ export const update = async (
     discount?: string;
     validUntil?: Date;
     imageUrl?: string | null;
+    isPublic?: boolean;
   },
 ) => {
   return prisma.offer.update({
@@ -89,4 +113,11 @@ export const remove = async (id: string) => {
 export const shopExists = async (shopId: string) => {
   const shop = await prisma.shop.findUnique({ where: { id: shopId } });
   return Boolean(shop);
+};
+
+export const findShopById = async (shopId: string) => {
+  return prisma.shop.findUnique({
+    where: { id: shopId },
+    select: { id: true, approved: true, isPublic: true },
+  });
 };

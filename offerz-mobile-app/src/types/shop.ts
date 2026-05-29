@@ -3,6 +3,8 @@ export type ShopSummary = {
   name: string;
   description?: string;
   imageUrl?: string;
+  isPublic: boolean;
+  approved: boolean;
   locationId: string;
   locationLabel: string;
   categories: ShopCategory[];
@@ -26,5 +28,11 @@ export type SellerOffer = {
   shopId: string;
   categoryNames: string;
   status: 'active' | 'expired';
+  isPublic: boolean;
   imageUrl?: string;
+};
+
+export type AdminShop = ShopSummary & {
+  ownerId: string;
+  createdAt: string;
 };

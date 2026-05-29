@@ -1,0 +1,4 @@
+{
+  "summary": "Implemented revised visibility model: shopkeepers can set isPublic before approval (buyer visibility still requires approved && isPublic); admin revoke no longer clears isPublic; creating offers blocked until shop approved; making shop private cascades isPublic=false to all offers; offer public toggle only requires public shop (not approval); mobile UI updated with new copy, approved-shop filtering, and enabled public switch on pending shops.",
+  "current_status": "Shop/offer visibility and approval flow complete with latest rules. Shopkeepers pre-set public intent before approval; approval unlocks buyer visibility automatically if isPublic is true. Offers require approved shop to create; offers inherit privacy when shop goes private."
+}

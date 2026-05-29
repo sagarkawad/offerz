@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, TextInput } from 'react-native';
 import { type Href, useRouter } from 'expo-router';
 
 import { authFormStyles as formStyles } from '@/components/auth-form-styles';
@@ -12,6 +12,7 @@ import { useMyShops } from '@/hooks/use-my-shops';
 import { useTheme } from '@/hooks/use-theme';
 import type { ApiSellerOffer } from '@/lib/api-types';
 import { parseApiResponse } from '@/lib/api';
+import { parseDisplayDate } from '@/lib/date-format';
 
 type CreateOfferFormProps = {
   onSuccess?: () => void;
@@ -24,20 +25,30 @@ export function CreateOfferForm({ onSuccess, onCreateShopPress, includeTabBarIns
   const theme = useTheme();
   const { fetchApi } = useApi();
   const { shops, isLoading: shopsLoading } = useMyShops(ALL_LOCATIONS, ALL_CATEGORIES, true);
+  const approvedShops = shops.filter((shop) => shop.approved);
+  const selectedShop = approvedShops.find((shop) => shop.id === shopId);
+  const canMakeOfferPublic = Boolean(selectedShop?.isPublic);
 
   const [shopId, setShopId] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [discount, setDiscount] = useState('');
   const [validUntil, setValidUntil] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (shops.length === 1 && !shopId) {
-      setShopId(shops[0].id);
+    if (approvedShops.length === 1 && !shopId) {
+      setShopId(approvedShops[0].id);
     }
-  }, [shopId, shops]);
+  }, [shopId, approvedShops]);
+
+  useEffect(() => {
+    if (!canMakeOfferPublic) {
+      setIsPublic(false);
+    }
+  }, [canMakeOfferPublic]);
 
   const inputStyle = [
     formStyles.input,
@@ -62,6 +73,12 @@ export function CreateOfferForm({ onSuccess, onCreateShopPress, includeTabBarIns
       return;
     }
 
+    const parsedValidUntil = parseDisplayDate(validUntil);
+    if (!parsedValidUntil) {
+      setError('Valid until must be in DD-MM-YYYY format.');
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
@@ -72,7 +89,8 @@ export function CreateOfferForm({ onSuccess, onCreateShopPress, includeTabBarIns
           title: title.trim(),
           description: description.trim(),
           discount: discount.trim(),
-          validUntil,
+          validUntil: parsedValidUntil,
+          isPublic,
         }),
       });
       await parseApiResponse<ApiSellerOffer>(response);
@@ -112,6 +130,17 @@ export function CreateOfferForm({ onSuccess, onCreateShopPress, includeTabBarIns
     );
   }
 
+  if (approvedShops.length === 0) {
+    return (
+      <ThemedView style={styles.centerState}>
+        <ThemedText type="smallBold">Shop pending approval</ThemedText>
+        <ThemedText type="small" themeColor="textSecondary" style={styles.emptyHint}>
+          You can add offers once an admin approves your shop.
+        </ThemedText>
+      </ThemedView>
+    );
+  }
+
   return (
     <ScrollView
       style={styles.scroll}
@@ -123,7 +152,7 @@ export function CreateOfferForm({ onSuccess, onCreateShopPress, includeTabBarIns
       showsVerticalScrollIndicator={false}>
       <ThemedText type="smallBold">Shop</ThemedText>
       <ThemedView style={styles.shopList}>
-        {shops.map((item) => {
+        {approvedShops.map((item) => {
           const isSelected = item.id === shopId;
           return (
             <Pressable
@@ -163,14 +192,26 @@ export function CreateOfferForm({ onSuccess, onCreateShopPress, includeTabBarIns
         placeholderTextColor={theme.textSecondary}
       />
 
-      <ThemedText type="smallBold">Valid until (YYYY-MM-DD)</ThemedText>
+      <ThemedText type="smallBold">Valid until (DD-MM-YYYY)</ThemedText>
       <TextInput
         value={validUntil}
         onChangeText={setValidUntil}
         style={inputStyle}
-        placeholder="2026-12-31"
+        placeholder="31-12-2026"
         placeholderTextColor={theme.textSecondary}
       />
+
+      <ThemedView style={styles.switchRow}>
+        <ThemedView style={styles.switchText}>
+          <ThemedText type="smallBold">Make offer public</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            {canMakeOfferPublic
+              ? 'Buyers will see this offer once your shop is approved.'
+              : 'Make the shop public first. Offers follow your shop visibility.'}
+          </ThemedText>
+        </ThemedView>
+        <Switch value={isPublic} onValueChange={setIsPublic} disabled={!canMakeOfferPublic} />
+      </ThemedView>
 
       {error ? <ThemedText style={formStyles.error}>{error}</ThemedText> : null}
 
@@ -214,6 +255,18 @@ const styles = StyleSheet.create({
   },
   shopRowSelected: {
     backgroundColor: 'rgba(60, 135, 247, 0.18)',
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.three,
+    backgroundColor: 'transparent',
+  },
+  switchText: {
+    flex: 1,
+    gap: Spacing.half,
+    backgroundColor: 'transparent',
   },
   centerState: {
     flex: 1,

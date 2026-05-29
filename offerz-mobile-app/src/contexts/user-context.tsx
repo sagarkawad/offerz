@@ -10,6 +10,7 @@ type UserContextValue = {
   user: ApiUser | null;
   role: ApiUser['role'] | null;
   isShopkeeper: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
@@ -61,6 +62,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       user,
       role: user?.role ?? null,
       isShopkeeper: user?.role === 'SHOPKEEPER',
+      isAdmin: user?.isAdmin ?? false,
       isLoading: !isLoaded || isLoading,
       error,
       refetch,

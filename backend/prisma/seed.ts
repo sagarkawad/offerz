@@ -14,6 +14,7 @@ const prisma = new PrismaClient({ adapter });
 
 const SEED_SHOPKEEPER = 'seed_shopkeeper_1';
 const SEED_BUYER = 'seed_buyer_1';
+const SEED_ADMIN = 'seed_admin_1';
 
 const locations = [
   { id: 'downtown-austin', label: 'Downtown, Austin', sortOrder: 1 },
@@ -210,6 +211,12 @@ async function main() {
     update: { role: 'BUYER' },
   });
 
+  await prisma.user.upsert({
+    where: { clerkId: SEED_ADMIN },
+    create: { clerkId: SEED_ADMIN, role: 'BUYER', isAdmin: true },
+    update: { isAdmin: true },
+  });
+
   for (const shop of shops) {
     const categoryIds = shop.categorySlugs.map((slug) => {
       const categoryId = categoryBySlug.get(slug);
@@ -227,11 +234,15 @@ async function main() {
         description: shop.description,
         locationId: shop.locationId,
         ownerId: SEED_SHOPKEEPER,
+        approved: true,
+        isPublic: true,
       },
       update: {
         name: shop.name,
         description: shop.description,
         locationId: shop.locationId,
+        approved: true,
+        isPublic: true,
       },
     });
 
@@ -249,6 +260,7 @@ async function main() {
         validUntil: new Date(offer.validUntil),
         shopId: offer.shopId,
         createdById: SEED_SHOPKEEPER,
+        isPublic: true,
       },
       update: {
         title: offer.title,
@@ -256,6 +268,7 @@ async function main() {
         discount: offer.discount,
         validUntil: new Date(offer.validUntil),
         shopId: offer.shopId,
+        isPublic: true,
       },
     });
   }
@@ -267,6 +280,7 @@ async function main() {
     offers: offers.length,
     shopkeeper: SEED_SHOPKEEPER,
     buyer: SEED_BUYER,
+    admin: SEED_ADMIN,
   });
 }
 

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useApi } from '@/hooks/use-api';
 import type { ApiShopSummary } from '@/lib/api-types';
 import { parseApiResponse } from '@/lib/api';
-import { mapApiShopSummaries } from '@/lib/mappers';
+import { mapApiShopSummaries, mapApiShopSummary } from '@/lib/mappers';
 import type { ShopSummary } from '@/types/shop';
 
 export function useMyShops(locationId: string, categoryId: string, enabled = true) {
@@ -11,6 +11,12 @@ export function useMyShops(locationId: string, categoryId: string, enabled = tru
   const [shops, setShops] = useState<ShopSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const updateShop = useCallback((updated: ShopSummary) => {
+    setShops((current) =>
+      current.map((shop) => (shop.id === updated.id ? { ...shop, ...updated } : shop)),
+    );
+  }, []);
 
   const refetch = useCallback(async () => {
     if (!enabled) {
@@ -48,5 +54,5 @@ export function useMyShops(locationId: string, categoryId: string, enabled = tru
     refetch();
   }, [refetch]);
 
-  return { shops, isLoading, error, refetch };
+  return { shops, isLoading, error, refetch, updateShop };
 }
