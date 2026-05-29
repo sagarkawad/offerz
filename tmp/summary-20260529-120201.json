@@ -1,0 +1,4 @@
+{
+  "summary": "Fixed AsyncStorage crash caused by incompatible @react-native-async-storage/async-storage v3.1.0. Downgraded to Expo SDK 56 compatible v2.2.0 via npx expo install. Added readSavedIds/writeSavedIds helpers with try/catch in saved-offers-context.tsx so storage failures degrade to in-memory state instead of uncaught promise rejections.",
+  "current_status": "Bottom tab navigation is implemented. AsyncStorage dependency is now pinned to 2.2.0 for Expo compatibility. User should restart Expo with cache clear (npx expo start -c) for the native module change to take effect."
+}

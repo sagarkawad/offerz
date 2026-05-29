@@ -1,0 +1,4 @@
+{
+  "summary": "Brief follow-up on background backend start (task 261916): that process connected to the DB and printed 'Server running on port 5000' but exited after ~2s because port 5000 was already held by an older server instance. A replacement server was started afterward and is currently listening on port 5000 with the updated routes.",
+  "current_status": "Backend is running on port 5000 with live API endpoints. Mobile integration is complete; user can test the app against the running server with correct EXPO_PUBLIC_API_URL and Clerk keys."
+}

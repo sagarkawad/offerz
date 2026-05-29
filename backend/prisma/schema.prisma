@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -12,17 +10,100 @@ datasource db {
   provider = "postgresql"
 }
 
-model User { 
-  id    Int     @id @default(autoincrement()) 
-  email String  @unique
-  name  String?
-  posts Post[]
-} 
-model Post { 
-  id        Int     @id @default(autoincrement()) 
-  title     String
-  content   String?
-  published Boolean @default(false) 
-  author    User    @relation(fields: [authorId], references: [id]) 
-  authorId  Int
-} 
+enum Role {
+  BUYER
+  SHOPKEEPER
+}
+
+model User {
+  clerkId String @id
+  role    Role   @default(BUYER)
+
+  shops         Shop[]
+  createdOffers Offer[]
+  savedOffers   SavedOffer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Location {
+  id        String @id
+  label     String
+  sortOrder Int    @default(0)
+
+  shops Shop[]
+
+  createdAt DateTime @default(now())
+}
+
+model Shop {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  imageUrl    String?
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [clerkId], onDelete: Cascade)
+
+  offers Offer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([locationId])
+}
+
+model Category {
+  id        String @id @default(cuid())
+  slug      String @unique
+  name      String
+  sortOrder Int    @default(0)
+
+  offers Offer[]
+
+  createdAt DateTime @default(now())
+}
+
+model Offer {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  discount    String
+  validUntil  DateTime
+  imageUrl    String?
+
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [clerkId], onDelete: Cascade)
+
+  savedBy SavedOffer[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shopId])
+  @@index([categoryId])
+  @@index([validUntil])
+  @@index([createdById])
+}
+
+model SavedOffer {
+  userId  String
+  offerId String
+  user    User  @relation(fields: [userId], references: [clerkId], onDelete: Cascade)
+  offer   Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  savedAt DateTime @default(now())
+
+  @@id([userId, offerId])
+}

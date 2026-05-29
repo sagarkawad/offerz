@@ -1,0 +1,4 @@
+{
+  "summary": "Follow-up on backend restart task (690847): the server was terminated by the user after it had successfully started ('Database connected', 'Server running on port 5000'). The backend is no longer running from that session.",
+  "current_status": "Frontend-backend integration code is complete. To test the app, start the backend again with `bun run dev` in the backend folder and ensure EXPO_PUBLIC_API_URL in the mobile app points to the reachable host."
+}

@@ -1,0 +1,4 @@
+{
+  "summary": "Replaced location picker modal with a dedicated /location screen. Restructured app navigation: root Stack layout with (tabs) group for Offers/Saved/Profile and a stack-pushed location screen. Tapping the location bar now navigates via router.push('/location'); selecting a location saves it and router.back() returns to Offers.",
+  "current_status": "Location selection uses a full screen with back navigation instead of a bottom sheet modal. Tab navigation preserved under (tabs) group. Location persistence unchanged via LocationProvider."
+}

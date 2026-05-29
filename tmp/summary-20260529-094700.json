@@ -1,0 +1,4 @@
+{
+  "summary": "Brief follow-up on failed background backend start (task 984927): exit code 1 because port 5000 was already in use by the previous server instance. A subsequent restart killed the old process and started the updated server successfully; API verified healthy.",
+  "current_status": "Location fallback feature is implemented. Backend should be running on port 5000 with the new offers response shape; mobile app needs reload if already open."
+}

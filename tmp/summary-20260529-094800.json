@@ -1,0 +1,4 @@
+{
+  "summary": "Brief follow-up on aborted API test task (87132): the curl/PowerShell one-liner hung and was terminated by user; not a product issue. Fallback was already verified separately via Invoke-RestMethod after backend restart.",
+  "current_status": "Location fallback is implemented and backend is healthy on port 5000. No action needed from the aborted test."
+}

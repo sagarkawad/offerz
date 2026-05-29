@@ -1,0 +1,4 @@
+{
+  "summary": "Fixed the React infinite re-render loop by stabilizing fetchApi in use-api.ts: getToken is now read via a ref so fetchApi no longer gets a new reference every render, breaking the useEffect → refetch → setState cycle in use-locations and related hooks. Also hardened backend server.ts to capture the listen handle and log EADDRINUSE clearly when port 5000 is already taken.",
+  "current_status": "Mobile app should load locations/offers without Maximum update depth errors after reloading Expo. Backend should stay running when port is free, or show a clear port-in-use error if another process holds 5000."
+}

@@ -1,0 +1,4 @@
+{
+  "summary": "Updated backend/prisma/schema.prisma with Role enum, minimal User (clerkId PK + role), Category table (slug, name, sortOrder), Offer model aligned to mobile fields with required categoryId and createdById, and SavedOffer junction. Removed template User/Post models. Did not run migrate or generate per user request.",
+  "current_status": "Prisma schema is ready for user-run migration and generate. Follow-up: prisma migrate dev, prisma generate, fix src imports from ./prisma/client to generated client, seed categories, wire API and mobile filters."
+}

@@ -1,0 +1,4 @@
+{
+  "summary": "Restricted POST /api/offers to shopkeepers: added requireShopkeeper middleware (loads User by Clerk userId, returns 403 if missing or role is BUYER), chained after authenticate on offers route, set createdById from req.user.clerkId (not client body), and typed create offer flow.",
+  "current_status": "Offer creation requires auth + SHOPKEEPER role in DB. Users must exist in User table with role SHOPKEEPER (via future registration/sync API). Buyers get 403 on create; public GET offers unchanged."
+}

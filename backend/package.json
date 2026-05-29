@@ -12,6 +12,14 @@
   "peerDependencies": {
     "typescript": "^5"
   },
+  "scripts": {
+    "dev": "bun run src/server.ts",
+    "start": "bun run src/server.ts",
+    "test:auth": "bun run src/test-auth-smoke.ts"
+  },
+  "prisma": {
+    "seed": "bun run prisma/seed.ts"
+  },
   "dependencies": {
     "@clerk/express": "^2.1.21",
     "@prisma/adapter-pg": "^7.8.0",

@@ -1,0 +1,4 @@
+﻿{
+  "summary": "Implemented location fallback for offers: when GET /api/offers finds no matches for the selected location (but category has offers elsewhere), the backend re-queries without location and returns expandedToOtherLocations: true. Mobile useOffers hook and Offers tab show a banner ('No offers in {location} — showing offers from other locations') and location labels on each card when expanded. Restarted backend to verify domain-austin + Food returns 3 offers with expandedToOtherLocations true.",
+  "current_status": "Offerz has full-stack offers with category gating, Clerk auth, saved offers, and now cross-location fallback with clear UI messaging. Backend restarted on port 5000; mobile Expo app may need reload to pick up hook/UI changes."
+}

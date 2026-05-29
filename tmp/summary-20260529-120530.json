@@ -1,0 +1,4 @@
+{
+  "summary": "Implemented location changing from the Offers screen location bar. Tapping the bar opens a bottom sheet modal with 4 Austin area options. Selected location persists via AsyncStorage in LocationProvider. Mock offers now include locationId and filter by selected location, with empty state when none available.",
+  "current_status": "Offers screen supports interactive location selection with persistence. Saved offers and profile tabs unchanged. GPS-based location detection remains future work."
+}

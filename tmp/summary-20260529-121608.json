@@ -1,0 +1,4 @@
+{
+  "summary": "Implemented full-stack Clerk auth per plan: installed @clerk/expo on the Expo app with ClerkProvider, token cache, (auth) sign-in/sign-up screens, profile sign-in/out UX, and api.ts/useApi for Bearer tokens. Backend now uses clerkMiddleware, authenticate middleware (401), removed broken custom auth/users routes, added env examples and Clerk env validation. TypeScript passes on mobile; auth smoke test skips until user adds Clerk keys to .env files.",
+  "current_status": "Clerk integration code-complete on frontend and backend. User must copy .env.example to .env in offerz-mobile-app and backend with real Clerk keys, enable email/password in Clerk Dashboard, then run expo start and bun run dev. Run bun run test:auth after backend .env is configured to verify 401 on protected routes."
+}
