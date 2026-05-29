@@ -3,14 +3,13 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
 } from 'react-native';
 import { type Href, useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { authFormStyles as formStyles } from '@/components/auth-form-styles';
 import { ProfileScreenHeader } from '@/components/profile-screen-header';
+import { SegmentControl } from '@/components/seller/segment-control';
 import { SellerOfferCard } from '@/components/seller/seller-offer-card';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -55,28 +54,7 @@ export default function SellerShopDetailScreen() {
               ) : null}
             </ThemedView>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.segmentRow}>
-              {STATUS_OPTIONS.map((option) => {
-                const isSelected = option.id === status;
-                return (
-                  <Pressable
-                    key={option.id}
-                    onPress={() => setStatus(option.id)}
-                    style={({ pressed }) => [
-                      styles.segment,
-                      isSelected && styles.segmentSelected,
-                      pressed && styles.pressed,
-                    ]}>
-                    <ThemedText type="smallBold" themeColor={isSelected ? 'text' : 'textSecondary'}>
-                      {option.label}
-                    </ThemedText>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
+            <SegmentControl options={STATUS_OPTIONS} value={status} onChange={setStatus} />
 
             {offersLoading ? (
               <ThemedView style={styles.centerState}>
@@ -138,20 +116,6 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.two,
     gap: Spacing.half,
     backgroundColor: 'transparent',
-  },
-  segmentRow: {
-    paddingHorizontal: Spacing.four,
-    paddingBottom: Spacing.three,
-    gap: Spacing.two,
-  },
-  segment: {
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Spacing.three,
-    backgroundColor: 'transparent',
-  },
-  segmentSelected: {
-    backgroundColor: 'rgba(60, 135, 247, 0.12)',
   },
   list: {
     paddingHorizontal: Spacing.four,

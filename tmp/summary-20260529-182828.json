@@ -1,0 +1,4 @@
+{
+  "summary": "Fixed the Add tab shop form being clipped halfway. Root cause was ScrollView not using flex:1 inside the tab layout, plus nested FlatLists breaking height measurement. ScrollView now fills the available space, location/shop lists use simple maps instead of FlatList, and tab bar bottom inset is applied via scroll content padding.",
+  "current_status": "Add tab Shop/Offer forms should scroll correctly within the full available screen area without appearing cut off."
+}

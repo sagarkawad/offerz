@@ -1,0 +1,4 @@
+{
+  "summary": "Diagnosed the clipped Add shop form: ScrollView lacked flex:1 inside the tab layout so content could not scroll, and FlatList nested inside ScrollView only rendered partial location rows. Fixed by giving ScrollView flex:1, replacing FlatLists with mapped views, and applying the same fix to CreateOfferForm.",
+  "current_status": "Add tab shop/offer forms should now scroll fully and show all fields including locations, categories, and submit button."
+}

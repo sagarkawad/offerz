@@ -1,0 +1,4 @@
+{
+  "summary": "Replaced the Add tab carousel with Shop/Offer segment buttons matching the Active/Expired/All UI pattern. Extracted CreateShopForm and CreateOfferForm components, added a shared SegmentControl, and wired the Add screen so the form switches based on selection. Standalone create-shop/create-offer routes still work; add-carousel was removed.",
+  "current_status": "Seller Add tab now uses inline segmented Shop/Offer forms with consistent segment UI across shop detail and add screens."
+}
