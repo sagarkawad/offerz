@@ -1,4 +1,7 @@
+import { shopInclude } from '../shops/shops.includes';
+
 export const offerInclude = {
-  shop: { include: { location: true } },
-  category: true,
+  shop: {
+    include: shopInclude,
+  },
 } as const;

@@ -8,10 +8,11 @@ import { useTheme } from '@/hooks/use-theme';
 
 type LocationBarProps = {
   location: string;
+  subtitle?: string;
   onPress?: () => void;
 };
 
-export function LocationBar({ location, onPress }: LocationBarProps) {
+export function LocationBar({ location, subtitle = 'Showing offers near', onPress }: LocationBarProps) {
   const theme = useTheme();
 
   return (
@@ -28,7 +29,7 @@ export function LocationBar({ location, onPress }: LocationBarProps) {
         />
         <ThemedView style={styles.textGroup}>
           <ThemedText type="small" themeColor="textSecondary">
-            Showing offers near
+            {subtitle}
           </ThemedText>
           <ThemedText type="smallBold" numberOfLines={1}>
             {location}

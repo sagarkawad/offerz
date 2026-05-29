@@ -1,0 +1,4 @@
+{
+  "summary": "Fixed SellerFilterProvider scope crash by moving it from (seller-tabs)/_layout.tsx to root _layout.tsx inside LocationProvider and CategoryProvider, so /seller/location and /seller/category share filter state with the Shops tab.",
+  "current_status": "Seller dashboard filter screens should no longer throw useSellerFilters must be used within SellerFilterProvider. Reload the mobile app and retry the location/category filters on the Shops tab."
+}

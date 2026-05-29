@@ -22,6 +22,7 @@ export default function OffersScreen() {
     categoryId,
     categories,
     setCategoryId,
+    isHydrated,
     isLoading: categoryLoading,
     error: categoryError,
     refetchCategories,
@@ -36,6 +37,7 @@ export default function OffersScreen() {
   const [showPicker, setShowPicker] = useState(false);
 
   const showCategoryPicker = !categoryId || showPicker;
+  const selectedCategory = categories.find((category) => category.id === categoryId);
 
   return (
     <ThemedView style={styles.container}>
@@ -45,7 +47,11 @@ export default function OffersScreen() {
           onPress={() => router.push('/location')}
         />
 
-        {showCategoryPicker ? (
+        {!isHydrated ? (
+          <ThemedView style={styles.centerState}>
+            <ActivityIndicator />
+          </ThemedView>
+        ) : showCategoryPicker ? (
           <CategoryPicker
             mode="picker"
             categories={categories}
@@ -60,15 +66,21 @@ export default function OffersScreen() {
           />
         ) : (
           <>
-            <CategoryPicker
-              mode="selected"
-              categories={categories}
-              selectedId={categoryId}
-              onSelect={setCategoryId}
-              onChangePress={() => setShowPicker(true)}
-            />
+            {selectedCategory ? (
+              <CategoryPicker
+                mode="selected"
+                categories={categories}
+                selectedId={categoryId}
+                onSelect={setCategoryId}
+                onChangePress={() => setShowPicker(true)}
+              />
+            ) : null}
 
-            {offersLoading ? (
+            {!selectedCategory ? (
+              <ThemedView style={styles.centerState}>
+                <ActivityIndicator />
+              </ThemedView>
+            ) : offersLoading ? (
               <ThemedView style={styles.centerState}>
                 <ActivityIndicator />
               </ThemedView>

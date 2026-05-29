@@ -1,17 +1,33 @@
 import type { NextFunction, Request, Response } from 'express';
 
 import { OfferServiceError } from '../offers/offers.service';
-import type { CreateOfferInput } from '../offers/offers.types';
+import type { CreateOfferInput, OfferStatus, UpdateOfferInput } from '../offers/offers.types';
 import * as service from './shops.service';
 import type { CreateShopInput, UpdateShopInput } from './shops.types';
 import { ShopServiceError } from './shops.service';
+
+function parseFilterParam(value: unknown): string | undefined {
+  if (typeof value !== 'string' || value.length === 0) {
+    return undefined;
+  }
+  return value;
+}
+
+function parseOfferStatus(value: unknown): OfferStatus | 'all' {
+  if (value === 'active' || value === 'expired') {
+    return value;
+  }
+  return 'all';
+}
 
 export const getMyShops = async (req: Request, res: Response) => {
   if (!req.user) {
     return res.status(403).json({ success: false, error: 'Shopkeeper access required' });
   }
 
-  const shops = await service.getMyShops(req.user.clerkId);
+  const locationId = parseFilterParam(req.query.locationId);
+  const categoryId = parseFilterParam(req.query.categoryId);
+  const shops = await service.getMyShops(req.user.clerkId, locationId, categoryId);
   res.json({ success: true, data: shops });
 };
 
@@ -56,6 +72,20 @@ export const deleteShop = async (req: Request, res: Response, next: NextFunction
   }
 };
 
+export const getShopOffers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.shop) {
+      return res.status(403).json({ success: false, error: 'Shopkeeper access required' });
+    }
+
+    const status = parseOfferStatus(req.query.status);
+    const offers = await service.getOffersForShop(req.shop.id, status);
+    res.json({ success: true, data: offers });
+  } catch (error) {
+    handleServiceError(error, next, res);
+  }
+};
+
 export const createOffer = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user || !req.shop) {
@@ -69,6 +99,37 @@ export const createOffer = async (req: Request, res: Response, next: NextFunctio
     );
 
     res.status(201).json({ success: true, data: offer });
+  } catch (error) {
+    handleServiceError(error, next, res);
+  }
+};
+
+export const updateOffer = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.shop) {
+      return res.status(403).json({ success: false, error: 'Shopkeeper access required' });
+    }
+
+    const offer = await service.updateOfferForShop(
+      req.shop.id,
+      req.params.offerId,
+      req.body as UpdateOfferInput,
+    );
+
+    res.json({ success: true, data: offer });
+  } catch (error) {
+    handleServiceError(error, next, res);
+  }
+};
+
+export const deleteOffer = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.shop) {
+      return res.status(403).json({ success: false, error: 'Shopkeeper access required' });
+    }
+
+    await service.deleteOfferForShop(req.shop.id, req.params.offerId);
+    res.status(204).send();
   } catch (error) {
     handleServiceError(error, next, res);
   }

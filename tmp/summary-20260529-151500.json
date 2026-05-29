@@ -1,0 +1,4 @@
+﻿{
+  "summary": "Implemented fixes for the category ID flash on the Offers tab: (1) index.tsx now waits until the stored categoryId can be resolved against the loaded categories list before switching from picker to offers view, and (2) category-picker.tsx selected mode shows a loading spinner instead of falling back to the raw category ID when the name is not yet available.",
+  "current_status": "Offers tab category loading UX is fixed. The app no longer briefly displays the stored category CUID before the human-readable category name appears."
+}

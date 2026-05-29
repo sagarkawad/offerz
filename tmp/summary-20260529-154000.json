@@ -1,0 +1,4 @@
+﻿{
+  "summary": "Hid the 'Showing offers in' category bar during initial load until the category name is resolved from the API. index.tsx now only renders the selected CategoryPicker once selectedCategory exists, showing a centered spinner instead; category-picker selected mode returns null when the name is unavailable.",
+  "current_status": "Offers tab loading UX is cleaner: hydration spinner, then category/offers loading without the category bar, then full offers view with the bar once the category name is known."
+}

@@ -37,48 +37,56 @@ const shops = [
     name: 'Sunrise Bakery',
     description: 'Fresh bakery and pastries',
     locationId: 'downtown-austin',
+    categorySlugs: ['food'],
   },
   {
     id: 'seed_shop_greenmart',
     name: 'GreenMart',
     description: 'Groceries and daily essentials',
     locationId: 'downtown-austin',
+    categorySlugs: ['retail', 'food'],
   },
   {
     id: 'seed_shop_beanbrew',
     name: 'Bean & Brew',
     description: 'Coffee and light bites',
     locationId: 'south-congress',
+    categorySlugs: ['food'],
   },
   {
     id: 'seed_shop_stylestudio',
     name: 'Style Studio',
     description: 'Hair and grooming',
     locationId: 'south-congress',
+    categorySlugs: ['services'],
   },
   {
     id: 'seed_shop_sliceheaven',
     name: 'Slice Heaven',
     description: 'Pizza and Italian',
     locationId: 'east-austin',
+    categorySlugs: ['food'],
   },
   {
     id: 'seed_shop_stepup',
     name: 'StepUp Shoes',
     description: 'Footwear and accessories',
     locationId: 'east-austin',
+    categorySlugs: ['fashion'],
   },
   {
     id: 'seed_shop_zenfit',
     name: 'ZenFit Studio',
     description: 'Yoga and fitness',
     locationId: 'domain-austin',
+    categorySlugs: ['health'],
   },
   {
     id: 'seed_shop_techhub',
     name: 'TechHub',
     description: 'Electronics and accessories',
     locationId: 'domain-austin',
+    categorySlugs: ['retail'],
   },
 ];
 
@@ -89,7 +97,6 @@ type OfferSeed = {
   discount: string;
   validUntil: string;
   shopId: string;
-  categorySlug: string;
 };
 
 const offers: OfferSeed[] = [
@@ -101,7 +108,6 @@ const offers: OfferSeed[] = [
     discount: '33% OFF',
     validUntil: '2026-06-15',
     shopId: 'seed_shop_sunrise',
-    categorySlug: 'food',
   },
   {
     id: 'seed_offer_2',
@@ -110,7 +116,6 @@ const offers: OfferSeed[] = [
     discount: '20% OFF',
     validUntil: '2026-06-30',
     shopId: 'seed_shop_greenmart',
-    categorySlug: 'retail',
   },
   {
     id: 'seed_offer_3',
@@ -119,7 +124,6 @@ const offers: OfferSeed[] = [
     discount: 'FREE UPGRADE',
     validUntil: '2026-06-08',
     shopId: 'seed_shop_beanbrew',
-    categorySlug: 'food',
   },
   {
     id: 'seed_offer_4',
@@ -128,7 +132,6 @@ const offers: OfferSeed[] = [
     discount: '$15 OFF',
     validUntil: '2026-07-01',
     shopId: 'seed_shop_stylestudio',
-    categorySlug: 'services',
   },
   {
     id: 'seed_offer_5',
@@ -137,7 +140,6 @@ const offers: OfferSeed[] = [
     discount: '25% OFF',
     validUntil: '2026-06-20',
     shopId: 'seed_shop_sliceheaven',
-    categorySlug: 'food',
   },
   {
     id: 'seed_offer_6',
@@ -146,7 +148,6 @@ const offers: OfferSeed[] = [
     discount: '40% OFF',
     validUntil: '2026-08-01',
     shopId: 'seed_shop_stepup',
-    categorySlug: 'fashion',
   },
   {
     id: 'seed_offer_7',
@@ -155,7 +156,6 @@ const offers: OfferSeed[] = [
     discount: '50% OFF',
     validUntil: '2026-06-25',
     shopId: 'seed_shop_zenfit',
-    categorySlug: 'health',
   },
   {
     id: 'seed_offer_8',
@@ -164,9 +164,20 @@ const offers: OfferSeed[] = [
     discount: '30% OFF',
     validUntil: '2026-06-18',
     shopId: 'seed_shop_techhub',
-    categorySlug: 'retail',
   },
 ];
+
+async function syncShopCategories(shopId: string, categoryIds: string[]) {
+  await prisma.shopCategory.deleteMany({ where: { shopId } });
+
+  if (categoryIds.length === 0) {
+    return;
+  }
+
+  await prisma.shopCategory.createMany({
+    data: categoryIds.map((categoryId) => ({ shopId, categoryId })),
+  });
+}
 
 async function main() {
   for (const loc of locations) {
@@ -200,10 +211,21 @@ async function main() {
   });
 
   for (const shop of shops) {
+    const categoryIds = shop.categorySlugs.map((slug) => {
+      const categoryId = categoryBySlug.get(slug);
+      if (!categoryId) {
+        throw new Error(`Missing category: ${slug}`);
+      }
+      return categoryId;
+    });
+
     await prisma.shop.upsert({
       where: { id: shop.id },
       create: {
-        ...shop,
+        id: shop.id,
+        name: shop.name,
+        description: shop.description,
+        locationId: shop.locationId,
         ownerId: SEED_SHOPKEEPER,
       },
       update: {
@@ -212,14 +234,11 @@ async function main() {
         locationId: shop.locationId,
       },
     });
+
+    await syncShopCategories(shop.id, categoryIds);
   }
 
   for (const offer of offers) {
-    const categoryId = categoryBySlug.get(offer.categorySlug);
-    if (!categoryId) {
-      throw new Error(`Missing category: ${offer.categorySlug}`);
-    }
-
     await prisma.offer.upsert({
       where: { id: offer.id },
       create: {
@@ -229,7 +248,6 @@ async function main() {
         discount: offer.discount,
         validUntil: new Date(offer.validUntil),
         shopId: offer.shopId,
-        categoryId,
         createdById: SEED_SHOPKEEPER,
       },
       update: {
@@ -238,7 +256,6 @@ async function main() {
         discount: offer.discount,
         validUntil: new Date(offer.validUntil),
         shopId: offer.shopId,
-        categoryId,
       },
     });
   }

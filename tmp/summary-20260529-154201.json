@@ -1,0 +1,4 @@
+﻿{
+  "summary": "Implemented delete account end-to-end: backend DELETE /api/users/me removes the Prisma user (with cascades) then deletes the Clerk user via getClerkClient(); profile screen adds a destructive Delete account row with confirmation alert, loading state, and sign-out on success.",
+  "current_status": "Offerz mobile profile now supports account deletion wired to the backend. Users can delete from Profile > Account with a confirmation dialog; backend cleans DB and Clerk auth."
+}

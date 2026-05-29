@@ -1,0 +1,4 @@
+﻿{
+  "summary": "Fixed the initial 'Choose a category' flash for returning users by reverting the categoryResolved gate (offers view shows as soon as a stored categoryId exists), adding isHydrated to category context so AsyncStorage hydration completes before UI decisions, and showing a neutral spinner during hydration. The selected-mode loading bar (fix #2) remains as a safety net while category names load.",
+  "current_status": "Offers tab category UX is improved: no raw ID flash, no misleading picker on startup for saved categories, and a brief spinner only while restoring the saved selection from storage."
+}

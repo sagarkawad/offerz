@@ -11,6 +11,7 @@ type CategoryContextValue = {
   categories: Category[];
   setCategoryId: (id: string) => Promise<void>;
   clearCategoryId: () => Promise<void>;
+  isHydrated: boolean;
   isLoading: boolean;
   error: string | null;
   getCategoryName: (id: string) => string;
@@ -46,14 +47,14 @@ async function removeCategoryId(): Promise<void> {
 export function CategoryProvider({ children }: { children: React.ReactNode }) {
   const { categories, isLoading: categoriesLoading, error, refetch } = useCategories();
   const [categoryId, setCategoryIdState] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isHydrating, setIsHydrating] = useState(true);
 
   useEffect(() => {
     readCategoryId().then((storedId) => {
       if (storedId) {
         setCategoryIdState(storedId);
       }
-      setIsLoading(false);
+      setIsHydrating(false);
     });
   }, []);
 
@@ -92,7 +93,8 @@ export function CategoryProvider({ children }: { children: React.ReactNode }) {
       categories,
       setCategoryId,
       clearCategoryId,
-      isLoading: isLoading || categoriesLoading,
+      isHydrated: !isHydrating,
+      isLoading: isHydrating || categoriesLoading,
       error,
       getCategoryName,
       refetchCategories: refetch,
@@ -102,7 +104,7 @@ export function CategoryProvider({ children }: { children: React.ReactNode }) {
       categories,
       setCategoryId,
       clearCategoryId,
-      isLoading,
+      isHydrating,
       categoriesLoading,
       error,
       getCategoryName,

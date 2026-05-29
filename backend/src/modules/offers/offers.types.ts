@@ -3,6 +3,15 @@ export type CreateOfferInput = {
   description: string;
   discount: string;
   validUntil: string;
-  categoryId: string;
   imageUrl?: string;
 };
+
+export type UpdateOfferInput = {
+  title?: string;
+  description?: string;
+  discount?: string;
+  validUntil?: string;
+  imageUrl?: string;
+};
+
+export type OfferStatus = 'active' | 'expired';

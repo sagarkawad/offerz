@@ -1,0 +1,4 @@
+{
+  "summary": "Updated the profile tab: removed the Notifications menu item and all 'Coming soon' placeholders. Wired Edit profile, About, and Help to new stack screens (edit-profile with Clerk name updates and read-only email, about with app info/version, help with FAQs plus email and location shortcuts). Registered routes in root layout and added a shared profile screen header component.",
+  "current_status": "Offerz mobile app profile section is fully navigable. Backend and offers/saved flows remain integrated; profile sub-screens are new and ready for manual testing in the running Expo app."
+}

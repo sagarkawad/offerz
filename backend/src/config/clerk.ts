@@ -1,3 +1,5 @@
+import { createClerkClient } from '@clerk/backend';
+
 export function assertClerkEnv(): void {
   const missing: string[] = [];
 
@@ -13,4 +15,12 @@ export function assertClerkEnv(): void {
       `Missing Clerk environment variables: ${missing.join(', ')}. Copy backend/.env.example to backend/.env and add your keys from https://dashboard.clerk.com`,
     );
   }
+}
+
+export function getClerkClient() {
+  assertClerkEnv();
+
+  return createClerkClient({
+    secretKey: process.env.CLERK_SECRET_KEY!,
+  });
 }

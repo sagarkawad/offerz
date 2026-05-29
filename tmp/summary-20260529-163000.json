@@ -1,0 +1,4 @@
+{
+  "summary": "Limited seller location filter to shopkeeper-owned shop locations: added getUniqueShopLocations helper, SellerFilterProvider now derives shopLocations from GET /api/shops/mine, updated seller/location picker and filter bar (hide picker when 0-1 locations, show static label for single location). Create shop still uses full platform location list.",
+  "current_status": "Seller Shops tab location filter only shows areas where the shopkeeper has shops. Reload app and test with a shopkeeper account that has shops in one or more locations."
+}

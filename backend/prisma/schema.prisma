@@ -49,7 +49,8 @@ model Shop {
   ownerId String
   owner   User   @relation(fields: [ownerId], references: [clerkId], onDelete: Cascade)
 
-  offers Offer[]
+  categories ShopCategory[]
+  offers     Offer[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -58,13 +59,23 @@ model Shop {
   @@index([locationId])
 }
 
+model ShopCategory {
+  shopId     String
+  categoryId String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([shopId, categoryId])
+  @@index([categoryId])
+}
+
 model Category {
   id        String @id @default(cuid())
   slug      String @unique
   name      String
   sortOrder Int    @default(0)
 
-  offers Offer[]
+  shops ShopCategory[]
 
   createdAt DateTime @default(now())
 }
@@ -80,9 +91,6 @@ model Offer {
   shopId String
   shop   Shop   @relation(fields: [shopId], references: [id], onDelete: Cascade)
 
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
   createdById String
   createdBy   User   @relation(fields: [createdById], references: [clerkId], onDelete: Cascade)
 
@@ -92,7 +100,6 @@ model Offer {
   updatedAt DateTime @updatedAt
 
   @@index([shopId])
-  @@index([categoryId])
   @@index([validUntil])
   @@index([createdById])
 }

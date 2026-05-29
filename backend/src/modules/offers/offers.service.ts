@@ -1,5 +1,6 @@
 import * as repository from './offers.repository';
-import type { CreateOfferInput } from './offers.types';
+import type { CreateOfferInput, OfferStatus, UpdateOfferInput } from './offers.types';
+import { getOfferStatus } from './offers.utils';
 
 export type GetOffersResult = {
   offers: Awaited<ReturnType<typeof repository.findMany>>;
@@ -24,6 +25,14 @@ export const getOffers = async (
 
 export const getOfferById = async (id: string) => repository.findById(id);
 
+export const getOffersForShop = async (shopId: string, status: OfferStatus | 'all' = 'all') => {
+  const offers = await repository.findByShopId(shopId, status);
+  return offers.map((offer) => ({
+    ...offer,
+    status: getOfferStatus(offer.validUntil),
+  }));
+};
+
 export const createOfferForShop = async (
   shopId: string,
   input: CreateOfferInput,
@@ -34,19 +43,51 @@ export const createOfferForShop = async (
     throw new OfferServiceError('Shop not found', 404);
   }
 
-  const categoryOk = await repository.categoryExists(input.categoryId);
-  if (!categoryOk) {
-    throw new OfferServiceError('Unknown category', 400);
-  }
-
   const { validUntil, ...rest } = input;
 
-  return repository.create({
+  const offer = await repository.create({
     ...rest,
     validUntil: new Date(validUntil),
     shopId,
     createdById,
   });
+
+  return {
+    ...offer,
+    status: getOfferStatus(offer.validUntil),
+  };
+};
+
+export const updateOfferForShop = async (
+  shopId: string,
+  offerId: string,
+  input: UpdateOfferInput,
+) => {
+  const existing = await repository.findById(offerId);
+  if (!existing || existing.shopId !== shopId) {
+    throw new OfferServiceError('Offer not found', 404);
+  }
+
+  const { validUntil, ...rest } = input;
+
+  const offer = await repository.update(offerId, {
+    ...rest,
+    ...(validUntil ? { validUntil: new Date(validUntil) } : {}),
+  });
+
+  return {
+    ...offer,
+    status: getOfferStatus(offer.validUntil),
+  };
+};
+
+export const deleteOfferForShop = async (shopId: string, offerId: string) => {
+  const existing = await repository.findById(offerId);
+  if (!existing || existing.shopId !== shopId) {
+    throw new OfferServiceError('Offer not found', 404);
+  }
+
+  await repository.remove(offerId);
 };
 
 export class OfferServiceError extends Error {

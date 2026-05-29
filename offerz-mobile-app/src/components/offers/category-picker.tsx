@@ -50,7 +50,11 @@ export function CategoryPicker({
   const theme = useTheme();
 
   if (mode === 'selected' && selectedId) {
-    const selectedName = categories.find((category) => category.id === selectedId)?.name ?? selectedId;
+    const selectedName = categories.find((category) => category.id === selectedId)?.name;
+
+    if (!selectedName) {
+      return null;
+    }
 
     return (
       <Pressable

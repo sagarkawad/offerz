@@ -5,10 +5,11 @@ import { Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import { AuthSync } from '@/components/auth-sync';
 import { CategoryProvider } from '@/contexts/category-context';
 import { LocationProvider } from '@/contexts/location-context';
 import { SavedOffersProvider } from '@/contexts/saved-offers-context';
+import { SellerFilterProvider } from '@/contexts/seller-filter-context';
+import { UserProvider } from '@/contexts/user-context';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -23,19 +24,28 @@ export default function RootLayout() {
   return (
     <ClerkProvider publishableKey={clerkPublishableKey} tokenCache={tokenCache}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <AuthSync />
-        <LocationProvider>
-          <CategoryProvider>
-            <SavedOffersProvider>
-              <AnimatedSplashOverlay />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="location" />
-              </Stack>
-            </SavedOffersProvider>
-          </CategoryProvider>
-        </LocationProvider>
+        <UserProvider>
+          <LocationProvider>
+            <CategoryProvider>
+              <SellerFilterProvider>
+                <SavedOffersProvider>
+                  <AnimatedSplashOverlay />
+                  <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(seller-tabs)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="seller" />
+                    <Stack.Screen name="location" />
+                    <Stack.Screen name="edit-profile" />
+                    <Stack.Screen name="about" />
+                    <Stack.Screen name="help" />
+                  </Stack>
+                </SavedOffersProvider>
+              </SellerFilterProvider>
+            </CategoryProvider>
+          </LocationProvider>
+        </UserProvider>
       </ThemeProvider>
     </ClerkProvider>
   );

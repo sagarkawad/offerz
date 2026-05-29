@@ -34,7 +34,6 @@ export type ApiOffer = {
   validUntil: string;
   imageUrl?: string | null;
   shopId: string;
-  categoryId: string;
   createdById: string;
   createdAt: string;
   updatedAt: string;
@@ -46,8 +45,8 @@ export type ApiOffer = {
     locationId: string;
     ownerId: string;
     location: ApiLocation;
+    categories: ApiCategory[];
   };
-  category: ApiCategory;
 };
 
 export type ApiUser = {
@@ -55,4 +54,24 @@ export type ApiUser = {
   role: 'BUYER' | 'SHOPKEEPER';
   createdAt: string;
   updatedAt: string;
+};
+
+export type ApiShopSummary = {
+  id: string;
+  name: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  locationId: string;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  location: ApiLocation;
+  categories: ApiCategory[];
+  offerCount: number;
+  activeOfferCount: number;
+  expiredOfferCount: number;
+};
+
+export type ApiSellerOffer = ApiOffer & {
+  status: 'active' | 'expired';
 };
